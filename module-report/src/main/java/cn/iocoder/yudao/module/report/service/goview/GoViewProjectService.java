@@ -46,12 +46,14 @@ public interface GoViewProjectService {
     GoViewProjectDO getProject(Long id);
 
     /**
-     * 获得我的项目分页
+     * 获得我的/本部门项目分页
      *
      * @param pageReqVO 分页查询
      * @param userId 用户编号
+     * @param deptId 部门编号
+     * @param isAdmin 是否超管
      * @return GoView 项目分页
      */
-    PageResult<GoViewProjectDO> getMyProjectPage(PageParam pageReqVO, Long userId);
+    PageResult<GoViewProjectDO> getMyProjectPage(PageParam pageReqVO, Long userId, Long deptId, boolean isAdmin);
 
 }

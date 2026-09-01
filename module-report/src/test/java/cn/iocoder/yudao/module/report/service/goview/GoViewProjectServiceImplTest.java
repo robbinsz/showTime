@@ -125,7 +125,7 @@ public class GoViewProjectServiceImplTest extends BaseDbUnitTest {
         Long userId = 1L;
 
         // 调用
-        PageResult<GoViewProjectDO> pageResult = goViewProjectService.getMyProjectPage(reqVO, userId);
+        PageResult<GoViewProjectDO> pageResult = goViewProjectService.getMyProjectPage(reqVO, userId, null, false);
         // 断言
         assertEquals(1, pageResult.getTotal());
         assertEquals(1, pageResult.getList().size());

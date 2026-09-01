@@ -54,4 +54,8 @@ public class GoViewProjectDO extends BaseDO {
      * 项目备注
      */
     private String remark;
+    /**
+     * 所属部门编号
+     */
+    private Long deptId;
 }

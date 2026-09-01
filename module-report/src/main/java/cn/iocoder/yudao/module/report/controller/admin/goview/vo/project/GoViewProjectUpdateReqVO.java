@@ -31,4 +31,7 @@ public class GoViewProjectUpdateReqVO {
     @Schema(description = "项目备注", example = "你猜")
     private String remark;
 
+    @Schema(description = "所属部门编号", example = "100")
+    private Long deptId;
+
 }

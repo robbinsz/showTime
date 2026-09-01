@@ -33,4 +33,7 @@ public class GoViewProjectRespVO {
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createTime;
 
+    @Schema(description = "所属部门编号", example = "100")
+    private Long deptId;
+
 }

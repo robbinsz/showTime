@@ -12,4 +12,7 @@ public class GoViewProjectCreateReqVO {
     @NotEmpty(message = "项目名称不能为空")
     private String name;
 
+    @Schema(description = "所属部门编号", example = "100")
+    private Long deptId;
+
 }

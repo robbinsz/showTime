@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.report.controller.admin.goview;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.report.controller.admin.goview.vo.project.GoViewProjectCreateReqVO;
 import cn.iocoder.yudao.module.report.controller.admin.goview.vo.project.GoViewProjectRespVO;
 import cn.iocoder.yudao.module.report.controller.admin.goview.vo.project.GoViewProjectUpdateReqVO;
@@ -12,7 +13,6 @@ import cn.iocoder.yudao.module.report.service.goview.GoViewProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -69,8 +69,11 @@ public class GoViewProjectController {
     @Operation(summary = "获得我的项目分页")
     @PreAuthorize("@ss.hasPermission('report:go-view-project:query')")
     public CommonResult<PageResult<GoViewProjectRespVO>> getMyProjectPage(@Valid PageParam pageVO) {
+        Long userId = getLoginUserId();
+        Long deptId = SecurityFrameworkUtils.getLoginUserDeptId();
+        boolean isAdmin = (userId != null && userId == 1L);
         PageResult<GoViewProjectDO> pageResult = goViewProjectService.getMyProjectPage(
-                pageVO, getLoginUserId());
+                pageVO, userId, deptId, isAdmin);
         return success(GoViewProjectConvert.INSTANCE.convertPage(pageResult));
     }
 

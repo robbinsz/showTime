@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.report.service.goview;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.report.controller.admin.goview.vo.project.GoViewProjectCreateReqVO;
 import cn.iocoder.yudao.module.report.controller.admin.goview.vo.project.GoViewProjectUpdateReqVO;
 import cn.iocoder.yudao.module.report.convert.goview.GoViewProjectConvert;
@@ -30,6 +31,12 @@ public class GoViewProjectServiceImpl implements GoViewProjectService {
 
     @Override
     public Long createProject(GoViewProjectCreateReqVO createReqVO) {
+        // 自动绑定当前登录用户的所属部门
+        if (createReqVO.getDeptId() == null) {
+            Long userDeptId = SecurityFrameworkUtils.getLoginUserDeptId();
+            createReqVO.setDeptId(userDeptId);
+        }
+
         // 插入
         GoViewProjectDO goViewProject = GoViewProjectConvert.INSTANCE.convert(createReqVO)
                 .setStatus(CommonStatusEnum.DISABLE.getStatus());
@@ -67,8 +74,8 @@ public class GoViewProjectServiceImpl implements GoViewProjectService {
     }
 
     @Override
-    public PageResult<GoViewProjectDO> getMyProjectPage(PageParam pageReqVO, Long userId) {
-        return goViewProjectMapper.selectPage(pageReqVO, userId);
+    public PageResult<GoViewProjectDO> getMyProjectPage(PageParam pageReqVO, Long userId, Long deptId, boolean isAdmin) {
+        return goViewProjectMapper.selectPage(pageReqVO, userId, deptId, isAdmin);
     }
 
 }

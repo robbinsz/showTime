@@ -23,17 +23,19 @@ const remainingRouter: AppRouteRecordRaw[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/index',
+    redirect: '/goview',
     name: 'Home',
-    meta: {},
+    meta: {
+      hidden: true
+    },
     children: [
       {
         path: 'index',
-        component: () => import('@/views/Home/Index.vue'),
+        component: () => import('@/views/report/goview/index.vue'),
         name: 'Index',
         meta: {
-          title: t('router.home'),
-          icon: 'ep:home-filled',
+          title: '大屏设计',
+          icon: 'ep:data-analysis',
           noCache: false,
           affix: true
         }
