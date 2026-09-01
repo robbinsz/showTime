@@ -12,7 +12,6 @@ import { getAccessToken, getRefreshToken } from '@/utils/auth'
 defineOptions({ name: 'GoView' })
 
 const getGoViewUrl = () => {
-  // 开发模式下使用独立的本地端口，生产/容器化模式下直接使用同源子路径 /goview/
   if (import.meta.env.DEV) {
     const envUrl = import.meta.env.VITE_GOVIEW_URL
     return envUrl || 'http://127.0.0.1:3020/goview/'
@@ -21,8 +20,19 @@ const getGoViewUrl = () => {
 }
 
 const src = computed(() => {
-  const token = getAccessToken() || ''
+  let token = getAccessToken() || ''
+  if (!token) {
+    try {
+      const raw = localStorage.getItem('ACCESS_TOKEN')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        token = parsed?.v || parsed || ''
+      }
+    } catch (e) {}
+  }
   const refreshToken = getRefreshToken() || ''
-  return `${getGoViewUrl()}?accessToken=${encodeURIComponent(token)}&refreshToken=${encodeURIComponent(refreshToken)}`
+  const baseUrl = getGoViewUrl()
+  const sep = baseUrl.endsWith('/') ? '' : '/'
+  return `${baseUrl}${sep}?accessToken=${encodeURIComponent(token)}&refreshToken=${encodeURIComponent(refreshToken)}#/project/items?accessToken=${encodeURIComponent(token)}`
 })
 </script>

@@ -181,17 +181,8 @@ export const goHome = () => {
  */
 export const loginCheck = () => {
   try {
-    const accessToken = localStorage.getItem('ACCESS_TOKEN')
-    if (accessToken) {
-      return true
-    }
-    const info = getLocalStorage(StorageEnum.GO_LOGIN_INFO_STORE)
-    if (!info) return false
-    const decodeInfo = cryptoDecode(info)
-    if (decodeInfo) {
-      return true
-    }
-    return false
+    const token = getPureToken()
+    return !!token
   } catch (error) {
     return false
   }

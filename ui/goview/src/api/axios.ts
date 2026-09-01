@@ -1,8 +1,6 @@
 import axios, { AxiosResponse, InternalAxiosRequestConfig, AxiosError } from 'axios'
 import { ResultEnum } from '@/enums/httpEnum'
-import { ErrorPageNameMap, PageEnum } from '@/enums/pageEnum'
-import { redirectErrorPage, getLocalStorage, cryptoDecode } from '@/utils'
-import { StorageEnum } from '@/enums/storageEnum'
+import { getPureToken } from '@/utils/auth'
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.DEV ? import.meta.env.VITE_DEV_PATH : import.meta.env.VITE_PRO_PATH,
@@ -12,18 +10,7 @@ const axiosInstance = axios.create({
 // 请求拦截器
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // 优先读取 ACCESS_TOKEN，其次读取 GO_LOGIN_INFO_STORE
-    let token = localStorage.getItem('ACCESS_TOKEN')
-    if (!token) {
-      try {
-        const info = getLocalStorage(StorageEnum.GO_LOGIN_INFO_STORE)
-        if (info) {
-          const decodeInfo = cryptoDecode(info)
-          token = decodeInfo?.token
-        }
-      } catch (e) {}
-    }
-
+    const token = getPureToken()
     if (token) {
       config.headers = config.headers || {}
       config.headers['Authorization'] = `Bearer ${token}`
@@ -47,12 +34,10 @@ axiosInstance.interceptors.response.use(
       if (code === 0 || code === 200) {
         return Promise.resolve(data)
       }
-      // 401 未登录 / token 过期
+      // 401 提示
       if (code === 401) {
-        localStorage.removeItem('ACCESS_TOKEN')
-        localStorage.removeItem('REFRESH_TOKEN')
         if (window['$message']) {
-          window['$message'].error(msg || '登录已过期，请重新登录')
+          window['$message'].warning(msg || '账号未登录或登录已过期，请在管理后台重新登录')
         }
         return Promise.reject(data)
       }
@@ -66,10 +51,6 @@ axiosInstance.interceptors.response.use(
     return Promise.resolve(res.data)
   },
   (err: AxiosError) => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem('ACCESS_TOKEN')
-      localStorage.removeItem('REFRESH_TOKEN')
-    }
     return Promise.reject(err)
   }
 )
