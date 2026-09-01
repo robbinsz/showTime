@@ -10,21 +10,15 @@
 
 ```
 showTime (Project Root)
-├── dependencies/            # Maven 统一依赖版本管理 BOM
-├── framework/               # 基础设施核心框架 (MyBatis-Plus, Security, Redis, Web 等)
-├── server/                  # 后端服务主入口容器 (启动类: YudaoServerApplication)
-├── module-system/           # 系统模块 (用户、角色、菜单、字典、租户等)
-├── module-infra/            # 基础设施模块 (代码生成、文件存储、API日志、配置等)
-├── module-report/           # 报表与大屏支持模块 (提供 GoView 项目存储与数据查询 API)
-├── module-bpm/              # 工作流 Flowable 模块 (按需开启)
-├── module-pay/              # 支付模块 (按需开启)
-├── module-mall/             # 商城模块 (按需开启)
-├── ...                      # 其他业务模块 (crm, erp, iot, mes, wms, hrm, fms, im, ai 等)
+├── dependencies/            # Maven 依赖版本管理 BOM
+├── framework/               # 基础设施核心框架
+├── server/                  # 后端主服务入口（启动类：YudaoServerApplication）
+├── module-system/           # 系统管理模块
+├── module-infra/            # 基础设施模块
+├── module-report/           # 报表管理模块（包含 GoView 接口）
 ├── ui/
-│   ├── admin-vue3/          # 管理后台前端 (Vue3 + Vite + Element Plus + Pinia + TS)
-│   ├── admin-vben/          # Vben 风格前端备选
-│   └── admin-vue2/          # Vue2 历史兼容版本
-├── goview/                  # 数据大屏前端 (Vue3 + Vite + Naive UI + Pinia + ECharts + TS)
+│   ├── admin-vue3/          # 管理后台前端 (Vue3 + Element Plus)
+│   └── goview/              # 数据大屏前端 (Vue3 + Naive UI + ECharts)
 └── sql/                     # 多数据库初始化 SQL 脚本
 ```
 
