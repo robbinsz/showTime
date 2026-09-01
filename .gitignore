@@ -1,57 +1,110 @@
-######################################################################
-# Build Tools
-
-.gradle
-/build/
-!gradle/wrapper/gradle-wrapper.jar
-
+# ======================================================================
+# Java & Maven 构建产物
+# ======================================================================
 target/
-!.mvn/wrapper/maven-wrapper.jar
-
+**/target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
 .flattened-pom.xml
-
-######################################################################
-# IDE
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-nbproject/private/
-build/*
-nbbuild/
-dist/
-nbdist/
-.nb-gradle/
-
-######################################################################
-# Others
-*.log
-*.xml.versionsBackup
-*.swp
-
+.gradle/
+build/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+!.mvn/wrapper/maven-wrapper.jar
 !*/build/*.java
 !*/build/*.html
 !*/build/*.xml
 
-### JRebel ###
-rebel.xml
+# ======================================================================
+# Node.js & 前端构建与依赖缓存
+# ======================================================================
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+dist-ssr/
+**/dist-ssr/
+*.local
+.npm/
+.pnpm-store/
+.pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vite/
+**/.vite/
+.eslintcache
+**/.eslintcache/
+.stylelintcache
+**/.stylelintcache/
+.turbo/
+**/.turbo/
 
-application-my.yaml
-script/docker/docker.env
+# ======================================================================
+# IDE & 编辑器配置
+# ======================================================================
+# IntelliJ IDEA
+.idea/
+**/.idea/
+*.iws
+*.iml
+**/*.iml
+*.ipr
+out/
+**/out/
 
-/yudao-ui-app/unpackage/
+# VS Code
+.vscode/
+**/.vscode/
+!.vscode/extensions.json
+
+# Eclipse / STS
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+**/.settings/
+.springBeans
+
+# NetBeans
+nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# ======================================================================
+# 操作系统生成文件
+# ======================================================================
 .DS_Store
 **/.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ======================================================================
+# 日志、临时文件与本地私有配置
+# ======================================================================
+*.log
+**/*.log
+logs/
+**/logs/
+*.swp
+*.swo
+*~
+*.tmp
 outputs/
+rebel.xml
+
+# 本地私有配置文件
+application-my.yaml
+**/application-my.yaml
+.env.local
+.env.*.local
