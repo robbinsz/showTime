@@ -6,19 +6,18 @@
   </ContentWrap>
 </template>
 <script lang="ts" setup>
+import { computed } from 'vue'
 import { getAccessToken, getRefreshToken } from '@/utils/auth'
 
 defineOptions({ name: 'GoView' })
 
 const getGoViewUrl = () => {
-  let baseUrl = import.meta.env.VITE_GOVIEW_URL
-  if (!baseUrl || baseUrl.includes(':3000')) {
-    // 默认或未配置时，自适应当前访问主机的 3020 端口
-    const protocol = window.location.protocol
-    const hostname = window.location.hostname
-    baseUrl = `${protocol}//${hostname}:3020`
+  // 开发模式下使用独立的本地端口，生产/容器化模式下直接使用同源子路径 /goview/
+  if (import.meta.env.DEV) {
+    const envUrl = import.meta.env.VITE_GOVIEW_URL
+    return envUrl || 'http://127.0.0.1:3020/goview/'
   }
-  return baseUrl
+  return '/goview/'
 }
 
 const src = computed(() => {

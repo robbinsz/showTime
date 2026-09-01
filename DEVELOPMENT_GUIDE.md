@@ -191,37 +191,40 @@ CREATE TABLE IF NOT EXISTS `report_go_view_project` (
    git cherry-pick <commit-hash>
    ```
 
-## 六、 Docker Compose 一键全栈启动
+## 六、 Docker Compose 一键全栈启动（统一单端口架构）
 
-项目已完全配置好 Docker Compose 容器化栈，涵盖 MySQL 8、Redis 6、Backend (Spring Boot)、Admin UI (Nginx) 与 GoView (Nginx)。
+项目已采用 **同服务单端口聚合架构**，统一通过 **80 端口** 对外提供全部前端能力（管理后台 + 内置数据大屏），彻底省去了独立的 GoView 容器和端口。
 
-### 1. 架构配置
-- **[docker-compose.yml](file:///Users/robbins/www/showTime/docker-compose.yml)**：定义 5 个服务，配置了服务依赖与健康检查（MySQL 就绪后自动启动后端）。
-- **[.env](file:///Users/robbins/www/showTime/.env)**：集中管理端口与密码配置。
-- **自动初始化**：MySQL 首次启动时自动加载 `sql/mysql/ruoyi-vue-pro-slim.sql`。
+### 1. 架构拓扑 (4 个容器)
+- **`showtime-admin`**（端口 `80`）：统一入口，Nginx 托管管理后台（`/`）、内置大屏设计器（`/goview/`），并反向代理后端 API（`/admin-api/`）；
+- **`showtime-server`**（端口 `48080`）：Spring Boot 后端服务；
+- **`showtime-mysql`**（端口 `3306`）：MySQL 8 数据库（自动初始化 `sql/mysql/ruoyi-vue-pro-slim.sql`）；
+- **`showtime-redis`**（端口 `6379`）：Redis 缓存。
 
 ### 2. 一键构建与启动命令
 ```bash
 # 1. 编译并生成后端 jar 包
 mvn clean package -DskipTests
 
-# 2. 构建前端静态资源 (已构建则可跳过)
-cd ui/admin-vue3 && npx vite build --mode env.local && cd ../..
+# 2. 构建大屏前端与管理端前端
 cd goview && npx vite build && cd ..
+cd ui/admin-vue3 && npx vite build --mode env.local && cd ../..
+rm -rf ui/admin-vue3/dist/goview && cp -r goview/dist ui/admin-vue3/dist/goview
 
-# 3. 构建所有镜像并后台一键启动
+# 3. 启动所有服务
 docker compose up -d --build
 
-# 4. 查看各容器状态与日志
+# 4. 查看状态与日志
 docker compose ps
 docker compose logs -f server
 ```
 
 ### 3. 服务访问入口
-| 服务 | 容器内服务 | 宿主机端口 / 访问地址 |
+| 服务 | 宿主机端口 / 访问地址 | 说明 |
 | :--- | :--- | :--- |
-| **管理后台** | Nginx + Vue3 | `http://localhost:80` |
-| **数据大屏** | Nginx + NaiveUI + ECharts | `http://localhost:3020` |
-| **后端 API** | Spring Boot (Knife4j) | `http://localhost:48080/doc.html` |
-| **MySQL 数据库** | MySQL 8.0 | `localhost:3306` (用户: root, 密码: 123456) |
-| **Redis 缓存** | Redis 6.0 | `localhost:6379` |
+| **管理后台** | `http://localhost` | 主管理平台 (默认: admin / admin123) |
+| **数据大屏** | `http://localhost/goview/` | 内置大屏设计器 (同源免登) |
+| **后端 API 文档** | `http://localhost:48080/doc.html` | Knife4j 接口文档 |
+| **MySQL 数据库** | `localhost:3306` | 用户: root / 密码: 123456 |
+| **Redis 缓存** | `localhost:6379` | 无密码 |
+

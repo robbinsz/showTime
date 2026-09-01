@@ -76,18 +76,6 @@ services:
     depends_on:
       - server
 
-  goview:
-    build:
-      context: ./goview
-      dockerfile: Dockerfile
-    image: showtime-goview:latest
-    container_name: showtime-goview
-    restart: unless-stopped
-    ports:
-      - "${GOVIEW_PORT:-3020}:80"
-    depends_on:
-      - server
-
 volumes:
   mysql_data:
     name: showtime-mysql-data
