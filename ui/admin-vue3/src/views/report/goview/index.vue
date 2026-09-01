@@ -33,6 +33,6 @@ const src = computed(() => {
   const refreshToken = getRefreshToken() || ''
   const baseUrl = getGoViewUrl()
   const sep = baseUrl.endsWith('/') ? '' : '/'
-  return `${baseUrl}${sep}?accessToken=${encodeURIComponent(token)}&refreshToken=${encodeURIComponent(refreshToken)}#/project/items?accessToken=${encodeURIComponent(token)}`
+  return `${baseUrl}${sep}?accessToken=${encodeURIComponent(token)}&refreshToken=${encodeURIComponent(refreshToken)}#/project/items`
 })
 </script>

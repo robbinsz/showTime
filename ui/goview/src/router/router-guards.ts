@@ -4,37 +4,27 @@ import { StorageEnum } from '@/enums/storageEnum'
 import { loginCheck, setLocalStorage, cryptoEncode, getPureToken } from '@/utils'
 
 export function createRouterGuards(router: Router) {
-  // 前置
   router.beforeEach(async (to, from, next) => {
-    // 处理动态参数
-    // @ts-ignore
-    if (!window.route) window.route = { params: {} }
-    // @ts-ignore
-    Object.assign(window.route.params, to.query)
-
-    // 1. 处理来自各种途径 (Search、Hash、LocalStorage) 的 Token
+    // 1. 提取并同步 Token
     const token = getPureToken()
     if (token) {
       localStorage.setItem('ACCESS_TOKEN', token)
       setLocalStorage(
         StorageEnum.GO_LOGIN_INFO_STORE,
-        cryptoEncode({
-          token: token,
-          username: 'admin',
-          nickName: '管理员'
-        })
+        cryptoEncode(
+          JSON.stringify({
+            token: token,
+            username: 'admin',
+            nickName: '管理员'
+          })
+        )
       )
     }
 
     const Loading = window['$loading']
     Loading && Loading.start()
 
-    const isErrorPage = router.getRoutes().findIndex(item => item.name === to.name)
-    if (isErrorPage === -1) {
-      return next({ name: PageEnum.ERROR_PAGE_NAME_404 })
-    }
-
-    // 2. 判断登录态
+    // 2. 检查是否已登录
     const isLogin = loginCheck()
     if (!isLogin) {
       if (to.name === PageEnum.BASE_LOGIN_NAME) {
@@ -43,22 +33,26 @@ export function createRouterGuards(router: Router) {
       return next({ name: PageEnum.BASE_LOGIN_NAME })
     }
 
-    // 3. 已登录状态下访问登录页，直接跳转主页
+    // 3. 已登录时，若访问登录页，直接跳转到项目列表页
     if (to.name === PageEnum.BASE_LOGIN_NAME) {
-      return next({ name: PageEnum.BASE_HOME_NAME })
+      return next({ name: PageEnum.BASE_HOME_ITEMS_NAME })
+    }
+
+    // 4. 若访问顶级 /project，直接跳转到项目列表
+    if (to.name === PageEnum.BASE_HOME_NAME || to.path === '/project') {
+      return next({ name: PageEnum.BASE_HOME_ITEMS_NAME })
     }
 
     next()
   })
 
-  router.afterEach((to, _, failure) => {
+  router.afterEach((to) => {
     const Loading = window['$loading']
     document.title = (to?.meta?.title as string) || document.title
     Loading && Loading.finish()
   })
 
-  // 错误
-  router.onError(error => {
-    console.log(error, '路由错误')
+  router.onError((error) => {
+    console.error('GoView 路由异常:', error)
   })
 }
