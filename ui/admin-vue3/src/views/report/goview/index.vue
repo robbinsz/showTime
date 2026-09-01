@@ -11,14 +11,6 @@ import { getAccessToken, getRefreshToken } from '@/utils/auth'
 
 defineOptions({ name: 'GoView' })
 
-const getGoViewUrl = () => {
-  if (import.meta.env.DEV) {
-    const envUrl = import.meta.env.VITE_GOVIEW_URL
-    return envUrl || 'http://127.0.0.1:3020/goview/'
-  }
-  return '/goview/'
-}
-
 const src = computed(() => {
   let token = getAccessToken() || ''
   if (!token) {
@@ -31,8 +23,7 @@ const src = computed(() => {
     } catch (e) {}
   }
   const refreshToken = getRefreshToken() || ''
-  const baseUrl = getGoViewUrl()
-  const sep = baseUrl.endsWith('/') ? '' : '/'
-  return `${baseUrl}${sep}?accessToken=${encodeURIComponent(token)}&refreshToken=${encodeURIComponent(refreshToken)}#/project/items`
+  // 统一采用同源相对子路径 /goview/，杜绝外部独立端口依赖
+  return `/goview/?accessToken=${encodeURIComponent(token)}&refreshToken=${encodeURIComponent(refreshToken)}#/project/items`
 })
 </script>
