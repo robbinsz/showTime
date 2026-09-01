@@ -1,0 +1,15 @@
+cn/iocoder/yudao/framework/datapermission/core/rule/dept/DeptDataPermissionRuleCustomizer.class
+cn/iocoder/yudao/framework/datapermission/core/aop/DataPermissionAnnotationInterceptor.class
+cn/iocoder/yudao/framework/datapermission/core/rule/DataPermissionRuleFactoryImpl.class
+cn/iocoder/yudao/framework/datapermission/core/rule/dept/package-info.class
+cn/iocoder/yudao/framework/datapermission/package-info.class
+cn/iocoder/yudao/framework/datapermission/core/util/DataPermissionUtils.class
+cn/iocoder/yudao/framework/datapermission/core/rule/DataPermissionRuleFactory.class
+cn/iocoder/yudao/framework/datapermission/config/YudaoDataPermissionAutoConfiguration.class
+cn/iocoder/yudao/framework/datapermission/core/annotation/DataPermission.class
+cn/iocoder/yudao/framework/datapermission/core/rule/dept/DeptDataPermissionRule.class
+cn/iocoder/yudao/framework/datapermission/core/rule/DataPermissionRule.class
+cn/iocoder/yudao/framework/datapermission/core/aop/DataPermissionAnnotationAdvisor.class
+cn/iocoder/yudao/framework/datapermission/core/db/DataPermissionRuleHandler.class
+cn/iocoder/yudao/framework/datapermission/core/aop/DataPermissionContextHolder.class
+cn/iocoder/yudao/framework/datapermission/config/YudaoDeptDataPermissionAutoConfiguration.class

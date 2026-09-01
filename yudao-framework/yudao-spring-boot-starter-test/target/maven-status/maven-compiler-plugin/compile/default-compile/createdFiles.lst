@@ -1,0 +1,13 @@
+cn/iocoder/yudao/framework/test/core/ut/BaseDbUnitTest$Application.class
+cn/iocoder/yudao/framework/test/config/SqlInitializationTestConfiguration.class
+cn/iocoder/yudao/framework/test/core/ut/BaseDbAndRedisUnitTest.class
+cn/iocoder/yudao/framework/test/core/ut/BaseRedisUnitTest.class
+cn/iocoder/yudao/framework/test/core/ut/BaseDbAndRedisUnitTest$Application.class
+cn/iocoder/yudao/framework/test/core/util/AssertUtils.class
+cn/iocoder/yudao/framework/test/core/util/RandomUtils.class
+cn/iocoder/yudao/framework/test/core/ut/BaseMockitoUnitTest.class
+cn/iocoder/yudao/framework/test/core/ut/BaseRedisUnitTest$Application.class
+cn/iocoder/yudao/framework/test/core/ut/package-info.class
+cn/iocoder/yudao/framework/test/package-info.class
+cn/iocoder/yudao/framework/test/core/ut/BaseDbUnitTest.class
+cn/iocoder/yudao/framework/test/config/RedisTestConfiguration.class
