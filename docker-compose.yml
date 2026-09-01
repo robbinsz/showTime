@@ -1,0 +1,95 @@
+name: yudao-system
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: yudao-mysql
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-ruoyi-vue-pro}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      default:
+        aliases:
+          - yudao-mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  redis:
+    image: redis:6-alpine
+    container_name: yudao-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      default:
+        aliases:
+          - yudao-redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  server:
+    image: yudao-server:latest
+    container_name: yudao-server
+    restart: unless-stopped
+    environment:
+      JAVA_OPTS: -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom
+      ARGS: >-
+        --spring.datasource.dynamic.datasource.master.url=jdbc:mysql://yudao-mysql:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+        --spring.datasource.dynamic.datasource.master.username=root
+        --spring.datasource.dynamic.datasource.master.password=${MYSQL_ROOT_PASSWORD:-123456}
+        --spring.datasource.dynamic.datasource.slave.url=jdbc:mysql://yudao-mysql:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+        --spring.datasource.dynamic.datasource.slave.username=root
+        --spring.datasource.dynamic.datasource.slave.password=${MYSQL_ROOT_PASSWORD:-123456}
+        --spring.redis.host=yudao-redis
+        --spring.data.redis.host=yudao-redis
+    ports:
+      - "${SERVER_PORT:-48080}:48080"
+    networks:
+      default:
+        aliases:
+          - server
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  admin:
+    image: yudao-admin:latest
+    container_name: yudao-admin
+    restart: unless-stopped
+    ports:
+      - "${ADMIN_PORT:-80}:80"
+    depends_on:
+      server:
+        condition: service_started
+
+  goview:
+    image: yudao-goview:project
+    container_name: yudao-goview
+    restart: unless-stopped
+    ports:
+      - "${GOVIEW_PORT:-8080}:80"
+
+volumes:
+  mysql_data:
+    name: yudao-system_mysql
+  redis_data:
+    name: yudao-system_redis
