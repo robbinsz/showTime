@@ -176,11 +176,15 @@ export const goHome = () => {
 }
 
 /**
- * * 判断是否登录（现阶段是有 login 数据即可）
+ * * 判断是否登录（支持 SSO ACCESS_TOKEN 与 GO_LOGIN_INFO_STORE）
  * @return boolean
  */
 export const loginCheck = () => {
   try {
+    const accessToken = localStorage.getItem('ACCESS_TOKEN')
+    if (accessToken) {
+      return true
+    }
     const info = getLocalStorage(StorageEnum.GO_LOGIN_INFO_STORE)
     if (!info) return false
     const decodeInfo = cryptoDecode(info)

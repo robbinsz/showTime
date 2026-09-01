@@ -15,10 +15,11 @@
         <n-space class="card-box-content" justify="center">
           <n-button
             size="large"
+            :loading="createLoading"
             :disabled="item.disabled"
             v-for="item in typeList"
             :key="item.key"
-            @click="btnHandle"
+            @click="btnHandle(item.key)"
           >
             <component :is="item.title"></component>
             <template #icon>
@@ -39,10 +40,12 @@ import { ref, watch, shallowRef } from 'vue'
 import { icon } from '@/plugins'
 import { PageEnum, ChartEnum } from '@/enums/pageEnum'
 import { fetchPathByName, routerTurnByPath, renderLang, getUUID } from '@/utils'
+import { createProjectApi } from '@/api/project'
 
 const { FishIcon, CloseIcon } = icon.ionicons5
 const { StoreIcon, ObjectStorageIcon } = icon.carbon
 const showRef = ref(false)
+const createLoading = ref(false)
 
 const emit = defineEmits(['close'])
 const props = defineProps({
@@ -70,9 +73,12 @@ const typeList = shallowRef([
   }
 ])
 
-watch(props, newValue => {
-  showRef.value = newValue.show
-})
+watch(
+  () => props.show,
+  newValue => {
+    showRef.value = newValue
+  }
+)
 
 // 关闭对话框
 const closeHandle = () => {
@@ -80,11 +86,27 @@ const closeHandle = () => {
 }
 
 // 处理按钮点击
-const btnHandle = (key: string) => {
-  closeHandle()
-  const id = getUUID()
-  const path = fetchPathByName(ChartEnum.CHART_HOME_NAME, 'href')
-  routerTurnByPath(path, [id], undefined, true)
+const btnHandle = async (key: string) => {
+  if (key === ChartEnum.CHART_HOME_NAME) {
+    createLoading.value = true
+    try {
+      const res: any = await createProjectApi({
+        name: '新建大屏项目'
+      })
+      const projectId = (res && res.code === 0 && res.data) ? String(res.data) : getUUID()
+      closeHandle()
+      const path = fetchPathByName(ChartEnum.CHART_HOME_NAME, 'href')
+      routerTurnByPath(path, [projectId], undefined, true)
+    } catch (e) {
+      // 兜底进入
+      const id = getUUID()
+      closeHandle()
+      const path = fetchPathByName(ChartEnum.CHART_HOME_NAME, 'href')
+      routerTurnByPath(path, [id], undefined, true)
+    } finally {
+      createLoading.value = false
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>

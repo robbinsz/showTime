@@ -39,12 +39,16 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { loadAsyncComponent } from '@/utils'
 import { LayoutHeaderPro } from '@/layout/components/LayoutHeaderPro'
 import { useContextMenu } from './hooks/useContextMenu.hook'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 import { useChartHistoryStore } from '@/store/modules/chartHistoryStore/chartHistoryStore'
+import { getProjectApi } from '@/api/project'
 
+const route = useRoute()
 const chartHistoryStoreStore = useChartHistoryStore()
 const chartEditStore = useChartEditStore()
 
@@ -58,6 +62,36 @@ const ContentLayers = loadAsyncComponent(() => import('./ContentLayers/index.vue
 const ContentCharts = loadAsyncComponent(() => import('./ContentCharts/index.vue'))
 const ContentConfigurations = loadAsyncComponent(() => import('./ContentConfigurations/index.vue'))
 const ContentLoad = loadAsyncComponent(() => import('./ContentLoad/index.vue'))
+
+// 从后端加载真实大屏配置
+onMounted(async () => {
+  const id = route.params.id
+  const projectId = typeof id === 'string' ? id : (Array.isArray(id) ? id[0] : '')
+  if (projectId) {
+    try {
+      const res: any = await getProjectApi(projectId)
+      if (res && res.code === 0 && res.data) {
+        if (res.data.name) {
+          chartEditStore.setEditCanvasConfig('projectName', res.data.name)
+        }
+        if (res.data.content) {
+          const contentObj = typeof res.data.content === 'string' ? JSON.parse(res.data.content) : res.data.content
+          if (contentObj.editCanvasConfig) {
+            chartEditStore.editCanvasConfig = Object.assign(chartEditStore.editCanvasConfig, contentObj.editCanvasConfig)
+          }
+          if (contentObj.componentList && Array.isArray(contentObj.componentList)) {
+            chartEditStore.componentList = contentObj.componentList
+          }
+          if (contentObj.requestGlobalConfig) {
+            chartEditStore.requestGlobalConfig = contentObj.requestGlobalConfig
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('从后端加载大屏失败，使用本地状态', e)
+    }
+  }
+})
 
 // 右键
 const {
