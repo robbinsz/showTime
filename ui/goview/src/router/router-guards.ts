@@ -1,11 +1,11 @@
 import { Router } from 'vue-router'
 import { PageEnum } from '@/enums/pageEnum'
 import { StorageEnum } from '@/enums/storageEnum'
-import { loginCheck, setLocalStorage, cryptoEncode, getPureToken } from '@/utils'
+import { setLocalStorage, cryptoEncode, getPureToken } from '@/utils'
 
 export function createRouterGuards(router: Router) {
   router.beforeEach(async (to, from, next) => {
-    // 1. 提取并同步 Token
+    // 1. 提取并同步 Token 到 GoView 缓存体系中
     const token = getPureToken()
     if (token) {
       localStorage.setItem('ACCESS_TOKEN', token)
@@ -24,22 +24,13 @@ export function createRouterGuards(router: Router) {
     const Loading = window['$loading']
     Loading && Loading.start()
 
-    // 2. 检查是否已登录
-    const isLogin = loginCheck()
-    if (!isLogin) {
-      if (to.name === PageEnum.BASE_LOGIN_NAME) {
-        return next()
-      }
-      return next({ name: PageEnum.BASE_LOGIN_NAME })
-    }
-
-    // 3. 已登录时，若访问登录页，直接跳转到项目列表页
-    if (to.name === PageEnum.BASE_LOGIN_NAME) {
+    // 2. 拦截并消除所有登录页跳转，深度融合统一进入大屏项目列表
+    if (to.name === PageEnum.BASE_LOGIN_NAME || to.path === '/login') {
       return next({ name: PageEnum.BASE_HOME_ITEMS_NAME })
     }
 
-    // 4. 若访问顶级 /project，直接跳转到项目列表
-    if (to.name === PageEnum.BASE_HOME_NAME || to.path === '/project') {
+    // 3. 顶级 /project 自动进入项目列表
+    if (to.name === PageEnum.BASE_HOME_NAME || to.path === '/project' || to.path === '/') {
       return next({ name: PageEnum.BASE_HOME_ITEMS_NAME })
     }
 

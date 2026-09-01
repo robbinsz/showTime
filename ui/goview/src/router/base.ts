@@ -8,9 +8,10 @@ import { GoReload } from '@/components/GoReload'
 export const LoginRoute: RouteRecordRaw = {
   path: '/login',
   name: 'Login',
-  component: () => import('@/views/login/index.vue'),
+  redirect: PageEnum.BASE_HOME_ITEMS,
+  component: () => import('@/views/project/items/index.vue'),
   meta: {
-    title: '登录',
+    title: '大屏项目',
   },
 };
 

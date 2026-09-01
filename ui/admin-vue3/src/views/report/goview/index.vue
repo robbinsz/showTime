@@ -6,12 +6,12 @@
   </ContentWrap>
 </template>
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { getAccessToken, getRefreshToken } from '@/utils/auth'
 
 defineOptions({ name: 'GoView' })
 
-const src = computed(() => {
+const getTokenString = () => {
   let token = getAccessToken() || ''
   if (!token) {
     try {
@@ -22,8 +22,22 @@ const src = computed(() => {
       }
     } catch (e) {}
   }
+  return token
+}
+
+onMounted(() => {
+  const token = getTokenString()
+  if (token) {
+    try {
+      // 同源直接写入纯净 token，供 GoView 瞬间读取
+      localStorage.setItem('GOVIEW_TOKEN', token)
+    } catch (e) {}
+  }
+})
+
+const src = computed(() => {
+  const token = getTokenString()
   const refreshToken = getRefreshToken() || ''
-  // 统一采用同源相对子路径 /goview/，杜绝外部独立端口依赖
-  return `/goview/?accessToken=${encodeURIComponent(token)}&refreshToken=${encodeURIComponent(refreshToken)}#/project/items`
+  return `/goview/?accessToken=${encodeURIComponent(token)}&refreshToken=${encodeURIComponent(refreshToken)}#/project/items?accessToken=${encodeURIComponent(token)}`
 })
 </script>
